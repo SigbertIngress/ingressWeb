@@ -1,0 +1,211 @@
+---
+title: "ingressWeb"
+author: "Sigbert Ingress"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Using the ingressWeb package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(fig.height = 7, fig.width = 7)
+```
+
+## Creating artificial portal positions
+### Random positions
+
+`random2` creates `n` portal positions. The last three portals form a outer triangle which consists all other portals.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(random2(10))
+plot(web)
+```
+
+The positions are generated from univariate random functions which are called twice. The parameter `d` is multiplicator which determines the distance of the outer portals. If `d` is smaller than `1` then the three other portals might not be outer portals anymore. 
+
+The parameter `random` is the univariate random generator function, the default is `rnorm`. The `...` may contain further parameters for the random generator function. As default the random portal positions are generated from an independent bivariate standard normal distribution.
+
+The following code generates the portal positions from an independent bivariate uniform distribution.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(random2(10, random=runif))
+plot(web)
+```
+
+### Cobweb
+
+`cobweb` creates `n` portal positions for each leg of a Cobweb.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(cobweb(6))
+plot(web)
+```
+
+The parameter `d` distorts each position by a uniform number in the interval `[-d;d]`. In the real world you will not get such nice portal positions for a cobweb.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(cobweb(6, d=0.2))
+plot(web)
+```
+
+### Herring/Fish bone
+
+`fishbone` creates `n` portal positions for a fish bone web.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(fishbone(9))
+plot(web)
+```
+
+The parameter `d` distorts each position by a uniform number in the interval `[-d;d]`. In the real world you will not get such nice portal positions for fish bone web.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(fishbone(9, d=0.2))
+plot(web)
+```
+
+## Creating a full web
+
+Once a web with portal positions has been created it is necessary to link the portals after some specific link plan. `make.links` creates links following some link plan. Except for the MaxArea plan, the default, it necessary to give a named parameter which also tells which link plan has to followed.
+
+### MaxArea web
+
+The MaxArea web maximizes the mind units (MU) you receive. The MUs are proportional to the area a field covers. Therefore the algorithm tries to maximize the area covered by the fields. 
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(random2(10))
+fullweb <- make.links(web)
+plot(fullweb)
+```
+
+### Cobweb
+
+For the Cobweb use
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(cobweb(6))
+web1 <- make.links(web, cobweb=1)
+web2 <- make.links(web, cobweb=2)
+web3 <- make.links(web, cobweb=3)
+par(mfrow=c(2,2))
+plot(web)
+plot(web1, main="Cobweb 1")
+plot(web2, main="Cobweb 2")
+plot(web3, main="Cobweb 3")
+
+```
+
+The `cobweb` parameter determines at which outer portal the algorithm starts. At a first glance the cob webs look very similar, but in fact the linking structure is different.
+
+### Herring/Fish bone web
+
+For the fish bone use
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(fishbone(9))
+web1 <- make.links(web, fishbone=1)
+web2 <- make.links(web, fishbone=2)
+web3 <- make.links(web, fishbone=3)
+par(mfrow=c(2,2))
+plot(web)
+plot(web1, main="Fish bone 1")
+plot(web2, main="Fish bone 2")
+plot(web3, main="Fish bone 3")
+```
+
+Note that you have to choose the "right" value for the parameter `fishbone` to create a fish bone web.
+
+### Fanfield web
+
+For the Fanfield use
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(random2(10))
+web1 <- make.links(web, fanfield=1)
+web2 <- make.links(web, fanfield=-1)
+web3 <- make.links(web, fanfield=2)
+web4 <- make.links(web, fanfield=3)
+par(mfrow=c(2,2))
+plot(web1, main="Fanfield 1")
+plot(web2, main="Fanfield -1")
+plot(web3, main="Fanfield 2")
+plot(web4, main="Fanfield 3")
+```
+
+The `fanfield` parameter determines which outer portal is the anchor. The parameter can have positive or negative values, it determines the counting order of the portal (clockwise or anti-clockwise).
+
+### Delaunay web
+
+For the Delaunay web use
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(random2(10))
+web1 <- make.links(web, delaunay=TRUE)
+plot(web1, main="Delaunay")
+```
+
+The Delaunay web contains usually only one multilayer.
+
+## Query a web
+
+### Overview
+
+You can query each a web for different informations: portals, links, fields, area of field (mind units).
+`summary` summarizes this information.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web <- ingressWeb(random2(10))
+summary(web)
+web2 <- make.links(web)
+summary(web2)
+```
+
+### Specific queries
+
+Functions are available for detailled information:
+
+* `portals`,
+* `links`,
+* `fields` and
+* `mindunits`.
+
+```{r}
+set.seed(0)
+library(ingressWeb)
+web  <- ingressWeb(random2(10))
+web2 <- make.links(web)
+portals(web2)
+links(web2)          # total number of links
+l<-links(web2, TRUE) # number of links per portal
+table(l)
+fields(web2)         # with multilayers
+mindunits(web2)      # not rounded up
+``` 
