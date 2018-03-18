@@ -13,7 +13,7 @@ ingressWeb(x, ...)
 \method{ingressWeb}{ingressWeb}(x, ...)
 }
 \arguments{
-\item{x}{numeric(n,2): x-y coordinates or ingressWeb object}
+\item{x}{numeric(n,2): data frame with x-y coordinates or ingressWeb object}
 
 \item{...}{further (named) parameters}
 }

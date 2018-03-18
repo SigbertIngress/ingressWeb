@@ -5,7 +5,7 @@
 #' @param n numeric: number of points for one leg
 #' @param d numeric: distortion of point coordinates (default: 0)
 #'
-#' @return x-y coordinates portals for cobweb
+#' @return data frame: with x-y coordinates for cobweb portals
 #' @export
 #'
 #' @examples
@@ -17,5 +17,5 @@
 cobweb <- function(n, d=0) {
   r <- rep(1:n, 3)
   a <- c(rep(0, n), rep(2/3*pi, n), rep(4/3*pi,n))
-  cbind(r*cos(a)+d*(2*runif(3*n)-1), r*sin(a)+d*(2*runif(3*n)-1))
+  data.frame(x=r*cos(a)+d*(2*runif(3*n)-1), y=r*sin(a)+d*(2*runif(3*n)-1))
 }

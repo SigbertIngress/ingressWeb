@@ -19,9 +19,12 @@
 #' @examples
 #' x <- random2(15)
 #' barycentric(x[,1], x[,2], x[13:15,1], x[13:15,2])
-barycentric <- function(x, y, xtri, ytri) {
-  t      <- (ytri[2]-ytri[3])*(xtri[1]-xtri[3])+(xtri[3]-xtri[2])*(ytri[1]-ytri[3])
+barycentric <- function(x, y, xtri, ytri, tolerance=1e-8) {
+  t <- (ytri[2]-ytri[3])*(xtri[1]-xtri[3])+(xtri[3]-xtri[2])*(ytri[1]-ytri[3])
   lambda <- cbind((ytri[2]-ytri[3])*(x-xtri[3])+(xtri[3]-xtri[2])*(y-ytri[3]),
-              (ytri[3]-ytri[1])*(x-xtri[3])+(xtri[1]-xtri[3])*(y-ytri[3]))/t
-  cbind(lambda, 1-rowSums(lambda))
+                  (ytri[3]-ytri[1])*(x-xtri[3])+(xtri[1]-xtri[3])*(y-ytri[3]))/t
+  lambda <- cbind(lambda, 1-rowSums(lambda))
+  az     <- (lambda[,3]>0) & (lambda[,3]<tolerance)
+  lambda[az, 3] <- 0
+  lambda
 }

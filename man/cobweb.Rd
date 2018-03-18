@@ -12,7 +12,7 @@ cobweb(n, d = 0)
 \item{d}{numeric: distortion of point coordinates (default: 0)}
 }
 \value{
-x-y coordinates portals for cobweb
+data frame: with x-y coordinates for cobweb portals
 }
 \description{
 generates positions of \code{3*n} portals for a (distorted) cobweb.

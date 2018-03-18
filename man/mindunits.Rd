@@ -15,10 +15,24 @@ mindunits(plan, density = 1)
 numeric(2): Mimimal and maximal area of all fields (if density=1)
 }
 \description{
-Returns the miminal (no multilayers) and maximal (all possible multilayers) mindunits of a web.
-The mindunits in Ingress are calculated by the area of the fields multiplied with the mindunits density.
-The mindunits density depends on the population living in that area. Exact values for the mindunit density
-are not known for the public. If density is set to one (default) then area of the fields will calculated.
+Returns the miminal (no multilayers) and maximal (all possible multilayers) mind units of a web.
+The mind units in Ingress are calculated by the area of the fields multiplied with some  mind unit density.
+The mind unit density depends on the population living in that area, but exact values for the mind unit density
+are not known for the public. Therefore the computation can be very rough. If density is set to one (default)
+then area of the fields will calculated.
+}
+\details{
+Since Niantic does not give much information about mind unit calculation. It is believed that the formula is
+\eqn{MU=area*(a+b*population density)}. This supported by the calculations of Matthew Baumgartner (see \url{http://www.fieldsizeestimator.com/}).
+How exactly the population density is computed is also not known, but is known that it has changed over time.
+
+The largest field ever created:
+\preformatted{
+12:55PM SSKumk created a Control Field @Фигурачистильщика,околообув
+(ulitsa Kirova, 139, Chelyabinsk, Chelyabinsk Oblast, Russia) +728600617722 MUs
+}
+It turned out that there was a bug in Niantics MU calculation. Not the area between the three portals was used for the calculation,
+but all the area outside was computed.
 }
 \examples{
 web  <- ingressWeb(random2(10))

@@ -4,10 +4,12 @@
 \alias{summary.ingressWeb}
 \title{summary.ingressWeb}
 \usage{
-\method{summary}{ingressWeb}(object, ...)
+\method{summary}{ingressWeb}(object, density = 1, ...)
 }
 \arguments{
-\item{object}{ingressWeb: ingress web o}
+\item{object}{ingressWeb: ingress web object}
+
+\item{density}{numeric: mind unit density (default: 1)}
 
 \item{...}{further parameters}
 }

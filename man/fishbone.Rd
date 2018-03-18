@@ -12,7 +12,7 @@ fishbone(n, d = 0)
 \item{d}{numeric: distortion of point coordinates (default: 0)}
 }
 \value{
-x-y coordinates portals for the fishbone web
+data frame: with x-y coordinates for fish bone web portals
 }
 \description{
 generates positions of \code{n} portals for a (distorted) fishbone web.

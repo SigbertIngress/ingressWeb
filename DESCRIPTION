@@ -12,7 +12,12 @@ RoxygenNote: 6.0.1
 Imports:
   graphics, 
   stats,
-  geometry
+  geometry,
+  sp,
+  TeachingDemos
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    shiny,
+    shinydashboard,
+    shinyFiles
 VignetteBuilder: knitr

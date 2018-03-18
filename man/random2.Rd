@@ -22,9 +22,9 @@ x-y coordinates portals for randomly generated web.
 generates random positions of \code{n} portals for a web.
 }
 \examples{
-xy <- random2(6)
-plot(xy)
+xy <- random2(20)
+plot(xy, asp=TRUE)
 #
-xy <- random2(6, random="runif")
-plot(xy)
+xy <- random2(20, random="runif")
+plot(xy, asp=TRUE)
 }

@@ -4,7 +4,7 @@
 \alias{barycentric}
 \title{barycentric}
 \usage{
-barycentric(x, y, xtri, ytri)
+barycentric(x, y, xtri, ytri, tolerance = 1e-08)
 }
 \arguments{
 \item{x}{numeric(n): x coordinates}

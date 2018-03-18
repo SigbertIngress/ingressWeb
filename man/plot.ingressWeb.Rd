@@ -4,20 +4,27 @@
 \alias{plot.ingressWeb}
 \title{plot}
 \usage{
-\method{plot}{ingressWeb}(x, text = FALSE, ...)
+\method{plot}{ingressWeb}(x, text = FALSE, palette = NULL, pos = NULL,
+  ...)
 }
 \arguments{
 \item{x}{ingressWeb: the web}
 
 \item{text}{logical: should the portal number plotted (default: FALSE)}
 
-\item{...}{further parameter for plotting the portal position (default: asp=TRUE, xlab="x", ylab="y", pch=19, axes=FALSE)}
+\item{palette}{color(s): colors used for plotting portal position by number of links (default: black). Note that using \code{col=...} overturns this setting.}
+
+\item{pos}{text: position of plot table portals by number of links (default: NULL, no plotting)}
+
+\item{...}{further parameter for plotting the portal position (default: asp=TRUE, xlab="x", ylab="y", pch=19, axes=FALSE, col="black")}
 }
 \value{
 a plot with the linked web
 }
 \description{
-plots a web
+plots a web. The plot consists of two plots: the web and it's link and additionally of a frequency table of links per portal (\code{links(x, TRUE)}).
+If either \code{pos} or \code{palette} is set the plot of the frequency table is shown. Possible values for \code{pos} are \code{"topright"},
+\code{"topleft"}, \code{"bottomleft"} or \code{"bottomright"}.
 }
 \examples{
 web <- ingressWeb(random2(15))
