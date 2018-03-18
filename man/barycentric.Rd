@@ -14,6 +14,8 @@ barycentric(x, y, xtri, ytri, tolerance = 1e-08)
 \item{xtri}{numeric(3): x coordinates of triangle vertices}
 
 \item{ytri}{numeric(3): y coordinates of triangle vertices}
+
+\item{tolerance}{numeric: if the barycentric coordinates are computed thena coordinate between 0 and \code{tolerance} will be set to zero (default: \code{1e-8})}
 }
 \value{
 numeric(n,3): barycentric coordinates for x-y coordinates

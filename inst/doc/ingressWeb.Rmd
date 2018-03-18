@@ -15,7 +15,28 @@ vignette: >
 knitr::opts_chunk$set(fig.height = 7, fig.width = 7)
 ```
 
-## Creating artificial portal positions
+## Creating portal positions
+
+### Real world portals
+
+You can store portal longitude and latitude data in a data frame to use them in fielding.
+
+```{r}
+library(ingressWeb)
+# Read portal position from a Excel CSV file
+path     <- system.file('shiny', 'data', package='ingressWeb')
+filename <- paste(path, 'Leisepark-170212.csv', sep='/')
+portals  <- read.csv(filename, stringsAsFactors = FALSE)
+# convert latitude and longitude to x-y coordinates using the 
+# Universal Transverse Mercator coordinate system 
+xy       <- ll2xy(portals, utm=33)
+web      <- ingressWeb(xy)
+plot(web)
+```
+
+Note: If columns \code{name} and/or \code{shortname} are included they will be overtaken into the web. For the Shiny app these variables will be used; the default for \code{name} is the portal number in \code{portals} (e.g. \code{1}, \code{2}, \code{3}, ...).
+
+
 ### Random positions
 
 `random2` creates `n` portal positions. The last three portals form a outer triangle which consists all other portals.
@@ -37,7 +58,9 @@ The following code generates the portal positions from an independent bivariate 
 set.seed(0)
 library(ingressWeb)
 web <- ingressWeb(random2(10, random=runif))
+par(mfrow=c(1,2))
 plot(web)
+plot(web, text=TRUE, col="white") # show portal index rather than points
 ```
 
 ### Cobweb
@@ -45,7 +68,6 @@ plot(web)
 `cobweb` creates `n` portal positions for each leg of a Cobweb.
 
 ```{r}
-set.seed(0)
 library(ingressWeb)
 web <- ingressWeb(cobweb(6))
 plot(web)
@@ -65,7 +87,6 @@ plot(web)
 `fishbone` creates `n` portal positions for a fish bone web.
 
 ```{r}
-set.seed(0)
 library(ingressWeb)
 web <- ingressWeb(fishbone(9))
 plot(web)
@@ -80,62 +101,47 @@ web <- ingressWeb(fishbone(9, d=0.2))
 plot(web)
 ```
 
+
 ## Creating a full web
 
-Once a web with portal positions has been created it is necessary to link the portals after some specific link plan. `make.links` creates links following some link plan. Except for the MaxArea plan, the default, it necessary to give a named parameter which also tells which link plan has to followed.
+Once a web with portal positions has been created it is necessary to link the portals after some specific link plan. `make.links` creates links following some link plan. Except for the Delaunay plan, the default, it necessary to give a named parameter which also tells which link plan has to followed.
+
+### Delaunay web
+
+The Delaunay web contains usually at maximum  one multilayer. For the Delaunay web use
+
+```{r message=FALSE}
+set.seed(0)
+library(ingressWeb)
+web  <- ingressWeb(random2(10))
+webd <- make.links(web)
+plot(webd, main="Delaunay", pos='topright')
+```
 
 ### MaxArea web
 
-The MaxArea web maximizes the mind units (MU) you receive. The MUs are proportional to the area a field covers. Therefore the algorithm tries to maximize the area covered by the fields. 
+The MaxArea web maximizes the mind units (MU) you receive. Since the MUs are proportional to the area a field covers, the algorithm tries to maximize the area covered by the fields.
 
 ```{r}
 set.seed(0)
 library(ingressWeb)
 web <- ingressWeb(random2(10))
-fullweb <- make.links(web)
+fullweb <- make.links(web, maxarea=10)
 plot(fullweb)
 ```
-
-### Cobweb
-
-For the Cobweb use
-
-```{r}
-set.seed(0)
-library(ingressWeb)
-web <- ingressWeb(cobweb(6))
-web1 <- make.links(web, cobweb=1)
-web2 <- make.links(web, cobweb=2)
-web3 <- make.links(web, cobweb=3)
-par(mfrow=c(2,2))
-plot(web)
-plot(web1, main="Cobweb 1")
-plot(web2, main="Cobweb 2")
-plot(web3, main="Cobweb 3")
-
-```
-
-The `cobweb` parameter determines at which outer portal the algorithm starts. At a first glance the cob webs look very similar, but in fact the linking structure is different.
 
 ### Herring/Fish bone web
 
 For the fish bone use
 
 ```{r}
-set.seed(0)
 library(ingressWeb)
 web <- ingressWeb(fishbone(9))
-web1 <- make.links(web, fishbone=1)
-web2 <- make.links(web, fishbone=2)
-web3 <- make.links(web, fishbone=3)
-par(mfrow=c(2,2))
-plot(web)
-plot(web1, main="Fish bone 1")
-plot(web2, main="Fish bone 2")
-plot(web3, main="Fish bone 3")
+web9 <- make.links(web, fishbone=9)
+par(mfrow=c(2,1))
+plot(web, text=TRUE, col="white")
+plot(web9, main="Fish bone 9")
 ```
-
-Note that you have to choose the "right" value for the parameter `fishbone` to create a fish bone web.
 
 ### Fanfield web
 
@@ -145,36 +151,152 @@ For the Fanfield use
 set.seed(0)
 library(ingressWeb)
 web <- ingressWeb(random2(10))
-web1 <- make.links(web, fanfield=1)
-web2 <- make.links(web, fanfield=-1)
-web3 <- make.links(web, fanfield=2)
-web4 <- make.links(web, fanfield=3)
+web1 <- make.links(web, fanfield=10)
+web2 <- make.links(web, fanfield=8)
+web3 <- make.links(web, fanfield=-8)
 par(mfrow=c(2,2))
-plot(web1, main="Fanfield 1")
-plot(web2, main="Fanfield -1")
-plot(web3, main="Fanfield 2")
-plot(web4, main="Fanfield 3")
+plot(web, main="Web", text=TRUE, col="white")
+plot(web1, main="Fanfield 10")
+plot(web2, main="Fanfield 8")
+plot(web3, main="Fanfield -8")
 ```
 
-The `fanfield` parameter determines which outer portal is the anchor. The parameter can have positive or negative values, it determines the counting order of the portal (clockwise or anti-clockwise).
 
-### Delaunay web
 
-For the Delaunay web use
+### Cobweb
+
+For the Cobweb use
+
+```{r}
+library(ingressWeb)
+web <- ingressWeb(cobweb(6))
+web1 <- make.links(web, cobweb=6)
+web2 <- make.links(web, cobweb=12)
+web3 <- make.links(web, cobweb=18)
+par(mfrow=c(2,2))
+plot(web, text=TRUE, col=0)
+plot(web1, main="Cobweb 1")
+plot(web2, main="Cobweb 2")
+plot(web3, main="Cobweb 3")
+```
+
+The `cobweb` parameter determines at which outer portal the algorithm starts. At a first glance the cob webs look very similar, but in fact the linking structure is different.
 
 ```{r}
 set.seed(0)
 library(ingressWeb)
-web <- ingressWeb(random2(10))
-web1 <- make.links(web, delaunay=TRUE)
-plot(web1, main="Delaunay")
+web <- ingressWeb(cobweb(6, 0.3))
+web1 <- make.links(web, cobweb=6)
+web2 <- make.links(web, cobweb=12)
+web3 <- make.links(web, cobweb=18)
+par(mfrow=c(2,2))
+plot(web, text=TRUE, col=0)
+plot(web1, main="Cobweb 1")
+plot(web2, main="Cobweb 2")
+plot(web3, main="Cobweb 3")
 ```
 
-The Delaunay web contains usually only one multilayer.
+## Creating a full web with real world portals
 
-## Query a web
+First we load the portals of the Leisepark (\href{Germany, Berlin, Pankow, Friedrichshain}{https://www.google.de/maps/@52.5298612,13.4221295,17z}) from Februar 2017.
 
-### Overview
+```{r}
+library(ingressWeb)
+# Read portal position from a Excel CSV file
+path     <- system.file('shiny', 'data', package='ingressWeb')
+filename <- paste(path, 'Leisepark-170212.csv', sep='/')
+portals  <- read.csv(filename)
+# convert latitude and longitude to x-y coordinates using the 
+# Universal Transverse Mercator coordinate system 
+xy       <- ll2xy(portals, utm=33)
+web      <- ingressWeb(xy)
+plot(web, text=TRUE, col="white")
+```
+
+### Triangulation web
+
+One problem that you encounter (except for the Delaunay web) is that most linking plans require three outer portals which form a triangle. Unfortunately in the real world a portal set does not form a triangular shape. Therefore we compute the convex hull, choose an inner portal and decompose portal set into a set or triangular areas where the choosen linking plan can be applied.
+
+```{r}
+library(ingressWeb)
+# Read portal position from a Excel CSV file
+path     <- system.file('shiny', 'data', package='ingressWeb')
+filename <- paste(path, 'Leisepark-170212.csv', sep='/')
+portals  <- read.csv(filename)
+# convert latitude and longitude to x-y coordinates using the 
+# Universal Transverse Mercator coordinate system 
+xy     <- ll2xy(portals, utm=33)
+web    <- ingressWeb(xy)
+webtri <- make.links(web, triangle=33) 
+plot(webtri)
+```
+
+### Delaunay web
+
+The Delaunay web is only web that does not require partinioning the portals before applying a linking plan.
+
+```{r}
+library(ingressWeb)
+# Read portal position from a Excel CSV file
+path     <- system.file('shiny', 'data', package='ingressWeb')
+filename <- paste(path, 'Leisepark-170212.csv', sep='/')
+portals  <- read.csv(filename)
+# convert latitude and longitude to x-y coordinates using the 
+# Universal Transverse Mercator coordinate system 
+xy   <- ll2xy(portals, utm=33)
+web  <- ingressWeb(xy)
+webd <- make.links(web) 
+plot(webd, pos="topright")
+```
+
+### Other webs
+
+At first the more easy plans, e.g. Fish bone, Fanfiled and Maxarea:
+
+```{r}
+library(ingressWeb)
+# Read portal position from a Excel CSV file
+path     <- system.file('shiny', 'data', package='ingressWeb')
+filename <- paste(path, 'Leisepark-170212.csv', sep='/')
+portals  <- read.csv(filename)
+# convert latitude and longitude to x-y coordinates using the 
+# Universal Transverse Mercator coordinate system 
+xy   <- ll2xy(portals, utm=33)
+web  <- ingressWeb(xy)
+webb <- make.links(web, fishbone=33) 
+webf <- make.links(web, fanfield=33) 
+webm <- make.links(web, maxarea=33) 
+par(mfrow=c(2,2))
+plot(web, main="No links")
+plot(webb, main="Fish bone")
+plot(webf, main="Fanfield")
+plot(webm, main="Maxarea")
+# In Berlin you have approx. 0.021 MU/m^2 field
+summary(webb, density=0.021)
+summary(webf, density=0.021)
+summary(webm, density=0.021)
+```
+
+And then for the most complex plan, the Cobweb:
+
+```{r}
+# Read portal position from a Excel CSV file
+path     <- system.file('shiny', 'data', package='ingressWeb')
+filename <- paste(path, 'Leisepark-170212.csv', sep='/')
+portals  <- read.csv(filename)
+# convert latitude and longitude to x-y coordinates using the 
+# Universal Transverse Mercator coordinate system 
+xy   <- ll2xy(portals, utm=33)
+web  <- ingressWeb(xy)
+webc <- make.links(web, cobweb=33) 
+plot(webc)
+# In Berlin you have approx. 0.021 MU/m^2 field
+summary(webc, density=0.021)
+```
+
+## Plot and query a web
+
+### `summary`
 
 You can query each a web for different informations: portals, links, fields, area of field (mind units).
 `summary` summarizes this information.
@@ -187,25 +309,89 @@ summary(web)
 web2 <- make.links(web)
 summary(web2)
 ```
-
 ### Specific queries
 
 Functions are available for detailled information:
 
 * `portals`,
 * `links`,
-* `fields` and
-* `mindunits`.
+* `fields`,
+* `mindunits` (only rough estimates) and
+* `acccesspoints` (only very very rough estimates)
 
 ```{r}
 set.seed(0)
 library(ingressWeb)
 web  <- ingressWeb(random2(10))
-web2 <- make.links(web)
+web2 <- make.links(web, maxarea=10)
 portals(web2)
 links(web2)          # total number of links
 l<-links(web2, TRUE) # number of links per portal
 table(l)
 fields(web2)         # with multilayers
 mindunits(web2)      # not rounded up
+accesspoints(web2)   # 
 ``` 
+
+Note that `mindunits` and `accesspoints` are only rough estimates: 
+
+* `mindunits`:
+    + `min_mu` gives the area of the fields (MU) if you make no multilayers and 
+    + `max_mu` gives the area of the fields (MU) if you make all possible multilayers. 
+* `accesspoints`:
+    + `portal_ap` gives the AP you get if capture all portals and set always eight resonators, 
+    + `mod_ap` gives the AP if deploy each portal with two mods, 
+    + `link_ap` gives the AP if you make all links and
+    + `field_ap` gives the AP if you make all fields. 
+
+The correct AP depends on various circumstances, e.g. 
+
+* which portals you have to capture, 
+* how many resonators and mods you will have to deplay and 
+* how many links and fields exists.  
+
+Not included are also the AP you get if you destroy portals, links, and fields from the opposite faction beforehand.
+
+## Using the Shiny app
+
+You can use the shiny app either in the (internet)[] or locally. Before you can use the Shiny app locally you must install the appropriate libraries once:
+
+```{r eval=FALSE}
+install.packages(c('shiny', 'shinydashboard', 'shinyFiles'))
+run
+```
+
+Then you just run 
+
+```{r eval=FALSE}
+library(ingressWeb)
+shinyWeb()
+```
+
+### Creating or loading portals positions
+
+The first step is to load portal positions or generate some. Either choose under `Web type` the choice `File` and click on `File select` if you want to load file (provided are the 43 portals of the [Leisepark in Berlin, Prenzlauer Berg](https://www.ingress.com/intel?ll=52.529774,13.421726&z=18). Or generate artificial portal positions, e.g. random, fishbone or cobweb positions. 
+
+![](app1.png)
+
+### Use a link plan
+
+When the portal list is correctly loaded and converted to x-y coordinates then app should show the portal positions and a summary of the current linking plan. Since most linking plans require three outer portals, one portal (in red) is choosen as a base portal. 
+
+![](app2.png)
+
+Under `Link plan` you may choose now a link plan and you will see in the plot the links and the summary of the web. The estimate of the MU depends on the MU density which is for Berlin approx. 2100 MU/km² field. You may change this with the slider. Note that choosing "0" with the slider will return the area in square meters covered by the fields.
+
+![](app3.png)
+
+### Prepare your own portal postions
+
+To include your own portal list you must create a (english) CSV file, (e.g. with LibreOffice Calc or Excel). The file must contain at least two columns: `lat` and `lon` (or `lng`) with the latitude and longitude of the portals. Additionally you can provide the columns `name` for the portal name and `shortname` which both uses the app. In the app the width for the portal name is limited, therefore for the short name a maximum length of approx. 20 characters is expected.  
+
+![](csvfile.png)
+
+Place you data file into the directory given by
+
+```{r eval=FALSE}
+ system.file("shiny", "data", package = "ingressWeb")
+```

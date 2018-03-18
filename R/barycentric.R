@@ -6,6 +6,7 @@
 #' @param y numeric(n): y coordinates
 #' @param xtri numeric(3): x coordinates of triangle vertices
 #' @param ytri numeric(3): y coordinates of triangle vertices
+#' @param tolerance numeric: if the barycentric coordinates are computed thena coordinate between 0 and \code{tolerance} will be set to zero (default: \code{1e-8})
 #'
 #' @details Barycentric are useful for different purposes:
 #' \enumerate{

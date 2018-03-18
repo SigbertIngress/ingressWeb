@@ -4,12 +4,12 @@
 \alias{ll2xy}
 \title{ll2xy}
 \usage{
-ll2xy(portals, utm = 33)
+ll2xy(portals, utm = NULL)
 }
 \arguments{
 \item{portals}{data frame: input data}
 
-\item{utm}{integer: utm zone to convert the latitude and longitude}
+\item{utm}{integer: utm zone to convert the latitude and longitude (default: NULL)}
 }
 \value{
 data frame: with five variables: \code{name} (portal name), \code{x} (x coordinate of portal), \code{y} (y coordinate of portal),
@@ -20,6 +20,7 @@ Computes from latitudes and longitudes to x-y coordinates based on the
 \href{UTM projection}{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system}.
 The data frame must contain two columns giving the longitude and latitude of the portals. The following columns will be used:
 \code{name} (portal name), \code{lat}/\code{latE6} (latitude) and \code{lon}/\code{lng}/\code{lonE6}/\code{lngE6} (longitude).
+If \code{utm} is not set explicitly then the UTM zone is the zone where majority of the portals is located.
 }
 \examples{
 path     <- system.file('shiny', 'data', package='ingressWeb')
